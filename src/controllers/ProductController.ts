@@ -2,6 +2,7 @@ import { Request, Response} from 'express'
 import { Product } from '../entities/Product'
 import { PostgresDataSource } from '../data-source'
 import { Repository } from 'typeorm'
+import { validate } from 'class-validator'
 
 class ProductController {
   private productRepository: Repository<Product>
@@ -25,12 +26,19 @@ class ProductController {
 
     const productRepository = PostgresDataSource.getRepository(Product)
     
-    const produtc = new Product
-    produtc.name = name
-    produtc.weight = weight
-    produtc.description = description
+    const product = new Product
+    product.name = name
+    product.weight = weight
+    product.description = description
 
-    const productDb = await productRepository.save(produtc)
+    const errors = await validate(product)
+    if (errors.length > 0){
+      return response.status(422).send({
+        errors
+      })
+    }
+
+    const productDb = await productRepository.save(product)
 
 
     return response.status(201).send({
@@ -72,6 +80,13 @@ class ProductController {
     product.name = name
     product.weight = weight
     product.description = description
+
+    const errors = await validate(product)
+    if (errors.length > 0){
+      return response.status(422).send({
+        errors
+      })
+    }
     
     try {
       const productDb = await productRepository.save(product)
