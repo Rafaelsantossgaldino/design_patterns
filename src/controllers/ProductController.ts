@@ -21,12 +21,14 @@ class ProductController {
   }
 
   async create(request: Request, response: Response): Promise<Response>{
+    const { name, weight, description } = request.body
+
     const productRepository = PostgresDataSource.getRepository(Product)
     
     const produtc = new Product
-    produtc.name = "Prod 1"
-    produtc.weight = 90
-    produtc.description = "descricao do produto"
+    produtc.name = name
+    produtc.weight = weight
+    produtc.description = description
 
     const productDb = await productRepository.save(produtc)
 
@@ -34,6 +36,67 @@ class ProductController {
     return response.status(201).send({
       data: productDb
     })
+  }
+
+  async findOne(request: Request, response: Response): Promise<Response>{
+    const id: string = request.params.id
+    const productRepository = PostgresDataSource.getRepository(Product)
+    const product = await productRepository.findOneBy({id})
+
+    if(!product){
+      return response.status(404).send({
+        error: 'Product not found'
+      })
+    }
+
+    return response.status(200).send({
+      date: product
+    })
+  }
+
+  async update(request: Request, response: Response): Promise<Response>{
+    const productRepository = PostgresDataSource.getRepository(Product)
+    const id: string = request.params.id
+    const { name, weight, description } = request.body
+
+    let product
+
+    try{
+      product = await productRepository.findOneByOrFail({id}) 
+    }catch(error){
+      return response.status(404).send({
+        error: 'Product not found' 
+      })
+    }
+
+    product.name = name
+    product.weight = weight
+    product.description = description
+    
+    try {
+      const productDb = await productRepository.save(product)
+      return response.status(200).send({
+        data: productDb
+      })
+    }catch (error) {
+      return response.status(500).send({
+        error: 'Internal error'
+      })
+    }
+  }
+
+  async delete(request: Request, response: Response): Promise<Response>{
+    const id: string = request.params.id
+
+    const productRepository = PostgresDataSource.getRepository(Product)
+    try {
+      await productRepository.delete(id)
+      return response.status(204).send({})
+    }catch (error) {
+      return response.status(400).send({
+        error: 'Error deleting'
+      })
+    }
   }
 }
 
