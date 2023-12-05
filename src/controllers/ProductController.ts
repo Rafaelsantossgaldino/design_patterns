@@ -1,6 +1,6 @@
 import { Request, Response} from 'express'
-import { Product } from '../entities/Product'
-import { PostgresDataSource } from '../data-source'
+import { Product } from '@/entities/Product'
+import { PostgresDataSource } from '@/data-source'
 import { Repository } from 'typeorm'
 import { validate } from 'class-validator'
 
