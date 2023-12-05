@@ -3,18 +3,17 @@ import { Product } from '@/entities/Product'
 import { PostgresDataSource } from '@/data-source'
 import { Repository } from 'typeorm'
 import { validate } from 'class-validator'
+import { ProductRepository } from '@/repositories/ProductRepository'
 
 class ProductController {
-  private productRepository: Repository<Product>
-  
+  private productRepository: ProductRepository
+
   constructor(){
-    this.productRepository = PostgresDataSource.getRepository(Product)
+    this.productRepository = new ProductRepository
   }
 
-  async findall(request: Request, response: Response): Promise<Response>{
-    const productRepository = PostgresDataSource.getRepository(Product)
-
-    const products = await productRepository.find()
+  findall = async(request: Request, response: Response): Promise<Response> => {
+    const products = await this.productRepository.getAll()
 
     return response.status(200).send({
       date: products
