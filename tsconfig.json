@@ -8,6 +8,10 @@
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
 		"allowJs": true,
+		"baseUrl":"src",
+		"paths": {
+			"@/*": ["*"]
+		},
 		"outDir": "./dist",
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,

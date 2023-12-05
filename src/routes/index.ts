@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import ProductController from '../controllers/ProductController';
+import 'module-alias/register'
+import ProductController from '@/controllers/ProductController';
 
 
 const routes = Router(); 
