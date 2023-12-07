@@ -12,3 +12,7 @@ export class CreateProductDto {
   @IsNotEmpty()
   weight: number
 }
+
+export class UpdateProductDto extends CreateProductDto{
+  id: string
+}
