@@ -1,9 +1,10 @@
 import { Request, Response} from 'express'
 import { Product } from '@/entities/Product'
 import { PostgresDataSource } from '@/data-source'
-import { Repository } from 'typeorm'
+import { CreateDateColumn, Repository } from 'typeorm'
 import { validate } from 'class-validator'
 import { ProductRepository } from '@/repositories/ProductRepository'
+import {CreateProductDto} from '@/dto/CreateProductDto'
 
 class ProductController {
   private productRepository: ProductRepository
@@ -20,24 +21,22 @@ class ProductController {
     })
   }
 
-  async create(request: Request, response: Response): Promise<Response>{
+  create = async(request: Request, response: Response): Promise<Response> => {
     const { name, weight, description } = request.body
 
-    const productRepository = PostgresDataSource.getRepository(Product)
-    
-    const product = new Product
-    product.name = name
-    product.weight = weight
-    product.description = description
+    const createProductDto = new CreateProductDto
+    createProductDto.name = name
+    createProductDto.description = description
+    createProductDto.weight = weight
 
-    const errors = await validate(product)
-    if (errors.length > 0){
+    const errors = await validate(createProductDto)
+    if(errors.length > 0){
       return response.status(422).send({
-        errors
+        error: errors
       })
     }
 
-    const productDb = await productRepository.save(product)
+    const productDb = await this.productRepository.create(createProductDto)
 
 
     return response.status(201).send({
